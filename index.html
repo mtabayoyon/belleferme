@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Belleferme — Available Rentals</title>
+<meta name="description" content="Belleferme — available rental units in the North Bay. View listings and apply online.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Public+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#17201B;
+    --paper:#FFFFFF;
+    --field:#F4F5F2;
+    --cypress:#2E5941;
+    --cypress-dark:#1E3A2F;
+    --hay:#C9A227;
+    --line:#DDE2DC;
+    --muted:#5C6660;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:'Public Sans',system-ui,sans-serif;
+    color:var(--ink);
+    background:var(--paper);
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1080px;margin:0 auto;padding:0 24px}
+
+  /* Header */
+  header{
+    border-bottom:1px solid var(--line);
+    background:var(--paper);
+    position:sticky;top:0;z-index:50;
+  }
+  .nav{display:flex;align-items:center;justify-content:space-between;height:64px}
+  .brand{font-family:'Fraunces',serif;font-weight:700;font-size:1.15rem;color:var(--cypress-dark);text-decoration:none;letter-spacing:.01em}
+  .brand span{color:var(--hay)}
+  .nav a.cta{
+    background:var(--cypress);color:#fff;text-decoration:none;
+    padding:10px 20px;border-radius:6px;font-weight:600;font-size:.9rem;
+    transition:background .15s ease;
+  }
+  .nav a.cta:hover{background:var(--cypress-dark)}
+
+  /* Hero */
+  .hero{background:var(--cypress-dark);color:#fff;padding:72px 0 64px}
+  .hero .eyebrow{
+    text-transform:uppercase;letter-spacing:.14em;font-size:.75rem;font-weight:600;
+    color:var(--hay);margin-bottom:16px;
+  }
+  .hero h1{
+    font-family:'Fraunces',serif;font-weight:600;
+    font-size:clamp(2rem,5vw,3.2rem);line-height:1.12;max-width:16ch;
+  }
+  .hero p{margin-top:18px;max-width:52ch;color:#C9D4CC;font-size:1.05rem}
+  .hero .actions{margin-top:32px;display:flex;gap:14px;flex-wrap:wrap}
+  .btn{
+    display:inline-block;padding:13px 26px;border-radius:6px;font-weight:600;
+    text-decoration:none;font-size:.95rem;transition:all .15s ease;border:1.5px solid transparent;
+  }
+  .btn-gold{background:var(--hay);color:var(--cypress-dark)}
+  .btn-gold:hover{filter:brightness(1.08)}
+  .btn-ghost{border-color:rgba(255,255,255,.4);color:#fff}
+  .btn-ghost:hover{border-color:#fff}
+
+  /* Listings */
+  .section{padding:64px 0}
+  .section-head{margin-bottom:36px}
+  .section-head h2{font-family:'Fraunces',serif;font-weight:600;font-size:1.8rem;color:var(--cypress-dark)}
+  .section-head p{color:var(--muted);margin-top:6px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:26px}
+
+  .card{
+    border:1px solid var(--line);border-radius:10px;overflow:hidden;
+    display:flex;flex-direction:column;background:var(--paper);
+    transition:box-shadow .2s ease, transform .2s ease;
+  }
+  .card:hover{box-shadow:0 8px 28px rgba(23,32,27,.10);transform:translateY(-2px)}
+  .card .photo{
+    aspect-ratio:4/3;background:var(--field);position:relative;
+    display:flex;align-items:center;justify-content:center;
+    color:var(--muted);font-size:.85rem;overflow:hidden;
+  }
+  .card .photo img{width:100%;height:100%;object-fit:cover;display:block}
+  .tag{
+    position:absolute;top:12px;left:12px;
+    background:var(--cypress);color:#fff;font-size:.7rem;font-weight:700;
+    letter-spacing:.08em;text-transform:uppercase;padding:5px 10px;border-radius:4px;
+  }
+  .tag.soon{background:var(--hay);color:var(--cypress-dark)}
+  .card .body{padding:22px;display:flex;flex-direction:column;flex:1}
+  .card h3{font-family:'Fraunces',serif;font-weight:600;font-size:1.25rem;color:var(--cypress-dark)}
+  .price{font-weight:700;font-size:1.05rem;margin-top:4px}
+  .price small{font-weight:500;color:var(--muted)}
+  .specs{
+    display:flex;gap:14px;flex-wrap:wrap;margin:12px 0;
+    font-size:.85rem;color:var(--muted);font-weight:500;
+  }
+  .specs span{display:flex;align-items:center;gap:5px}
+  .card p.desc{font-size:.92rem;color:var(--muted);flex:1}
+  .card .apply{
+    margin-top:18px;text-align:center;background:var(--cypress);color:#fff;
+    text-decoration:none;padding:11px;border-radius:6px;font-weight:600;font-size:.9rem;
+    transition:background .15s ease;
+  }
+  .card .apply:hover{background:var(--cypress-dark)}
+  .card .apply.disabled{background:var(--field);color:var(--muted);pointer-events:none}
+
+  /* Photo carousel */
+  .carousel .slide{display:none;position:absolute;inset:0}
+  .carousel .slide.active{display:block}
+  .car-btn{
+    position:absolute;top:50%;transform:translateY(-50%);
+    background:rgba(23,32,27,.55);color:#fff;border:none;cursor:pointer;
+    width:34px;height:34px;border-radius:50%;font-size:.95rem;line-height:1;
+    display:flex;align-items:center;justify-content:center;
+    transition:background .15s ease;z-index:2;
+  }
+  .car-btn:hover{background:rgba(23,32,27,.85)}
+  .car-btn:focus-visible{outline:2px solid var(--hay)}
+  .car-btn.prev{left:10px}
+  .car-btn.next{right:10px}
+  .car-count{
+    position:absolute;bottom:10px;right:12px;z-index:2;
+    background:rgba(23,32,27,.55);color:#fff;font-size:.72rem;font-weight:600;
+    padding:3px 9px;border-radius:99px;letter-spacing:.04em;
+  }
+
+  /* Application */
+  .apply-section{background:var(--field);padding:72px 0}
+  .apply-card{
+    background:var(--paper);border:1px solid var(--line);border-radius:12px;
+    max-width:680px;margin:0 auto;padding:40px;
+  }
+  .apply-card h2{font-family:'Fraunces',serif;font-weight:600;font-size:1.7rem;color:var(--cypress-dark)}
+  .apply-card > p{color:var(--muted);margin:8px 0 28px;font-size:.95rem}
+  form{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+  .field{display:flex;flex-direction:column;gap:6px}
+  .field.full{grid-column:1 / -1}
+  label{font-size:.82rem;font-weight:600;color:var(--ink)}
+  label .req{color:var(--hay)}
+  input,select,textarea{
+    font-family:inherit;font-size:.95rem;padding:11px 13px;
+    border:1.5px solid var(--line);border-radius:6px;background:var(--paper);
+    color:var(--ink);width:100%;
+  }
+  input:focus,select:focus,textarea:focus{outline:2px solid var(--cypress);outline-offset:1px;border-color:var(--cypress)}
+  textarea{resize:vertical;min-height:96px}
+  .submit-btn{
+    grid-column:1 / -1;background:var(--cypress);color:#fff;border:none;
+    padding:15px;border-radius:6px;font-weight:700;font-size:1rem;cursor:pointer;
+    font-family:inherit;transition:background .15s ease;
+  }
+  .submit-btn:hover{background:var(--cypress-dark)}
+  .submit-btn:disabled{opacity:.6;cursor:wait}
+  .form-note{grid-column:1 / -1;font-size:.8rem;color:var(--muted);text-align:center}
+  .form-status{
+    grid-column:1 / -1;display:none;padding:14px;border-radius:6px;
+    font-weight:600;font-size:.92rem;text-align:center;
+  }
+  .form-status.ok{display:block;background:#E7F2EA;color:var(--cypress-dark);border:1px solid var(--cypress)}
+  .form-status.err{display:block;background:#FBEEE8;color:#8A3B1E;border:1px solid #D97B54}
+
+  /* Footer */
+  footer{background:var(--cypress-dark);color:#C9D4CC;padding:40px 0;font-size:.88rem}
+  footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:16px;align-items:center}
+  footer a{color:#fff;text-decoration:none;font-weight:600}
+  footer a:hover{text-decoration:underline}
+
+  @media (max-width:640px){
+    form{grid-template-columns:1fr}
+    .apply-card{padding:28px 20px}
+    .hero{padding:56px 0 48px}
+  }
+  @media (prefers-reduced-motion: reduce){
+    html{scroll-behavior:auto}
+    .card,.card:hover{transition:none;transform:none}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap nav">
+    <a class="brand" href="#top">Belle<span>ferme</span></a>
+    <a class="cta" href="#apply">Apply Now</a>
+  </div>
+</header>
+
+<section class="hero" id="top">
+  <div class="wrap">
+    <div class="eyebrow">North Bay Rentals</div>
+    <h1>Well-kept homes, straightforward renting.</h1>
+    <p>Three units currently listed. Browse the details below, then submit one application for whichever unit fits — we respond within one business day.</p>
+    <div class="actions">
+      <a class="btn btn-gold" href="#listings">View Listings</a>
+      <a class="btn btn-ghost" href="#apply">Apply Now</a>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="listings">
+  <div class="wrap">
+    <div class="section-head">
+      <h2>Available Units</h2>
+      <p>Updated regularly. Photos and full details for each unit below.</p>
+    </div>
+    <div class="grid">
+
+      <!-- ===== STUDIO B ===== -->
+      <div class="card">
+        <div class="photo carousel" data-carousel>
+          <span class="tag">Available Now</span>
+          <img src="photos/studio-b-01.jpg" alt="Studio B — open living space with kitchenette and vaulted ceilings" class="slide active">
+          <img src="photos/studio-b-02.jpg" alt="Studio B — open floor plan with polished concrete floors" class="slide" loading="lazy">
+          <img src="photos/studio-b-03.jpg" alt="Studio B — living and sleeping area with dining nook" class="slide" loading="lazy">
+          <img src="photos/studio-b-04.jpg" alt="Studio B — bathroom with pebble tile floor" class="slide" loading="lazy">
+          <img src="photos/studio-b-05.jpg" alt="Studio B — walk-in glass shower with rain showerhead" class="slide" loading="lazy">
+          <button class="car-btn prev" type="button" aria-label="Previous photo">&#10094;</button>
+          <button class="car-btn next" type="button" aria-label="Next photo">&#10095;</button>
+          <div class="car-count">1 / 5</div>
+        </div>
+        <div class="body">
+          <h3>Studio B</h3>
+          <div class="price">$1,900 <small>/ month &nbsp;&middot;&nbsp; $1,900 deposit</small></div>
+          <div class="specs">
+            <span>Studio</span><span>1 bath</span><span>Open floor plan</span>
+          </div>
+          <p class="desc">Spacious open-plan studio with vaulted ceilings, recessed lighting, and polished concrete floors. Kitchenette with gas cooktop and range hood, dining nook, and a modern bathroom featuring a walk-in glass shower with rain showerhead and pebble tile.</p>
+          <a class="apply" href="#apply" data-unit="Studio B">Apply for This Unit</a>
+        </div>
+      </div>
+
+      <!-- ===== STUDIO C ===== -->
+      <div class="card">
+        <div class="photo carousel" data-carousel>
+          <span class="tag">Available Now</span>
+          <img src="photos/studio-c-01.jpg" alt="Studio C — open living area and kitchen" class="slide active">
+          <img src="photos/studio-c-02.jpg" alt="Studio C — kitchen with skylight and gas range" class="slide" loading="lazy">
+          <img src="photos/studio-c-03.jpg" alt="Studio C — butcher-block kitchen island" class="slide" loading="lazy">
+          <img src="photos/studio-c-04.jpg" alt="Studio C — dining area and entry" class="slide" loading="lazy">
+          <img src="photos/studio-c-05.jpg" alt="Studio C — living room with vaulted ceiling" class="slide" loading="lazy">
+          <img src="photos/studio-c-06.jpg" alt="Studio C — bedroom with mini-split heating and cooling" class="slide" loading="lazy">
+          <img src="photos/studio-c-07.jpg" alt="Studio C — bathroom vanity" class="slide" loading="lazy">
+          <img src="photos/studio-c-08.jpg" alt="Studio C — walk-in glass shower with pebble tile floor" class="slide" loading="lazy">
+          <img src="photos/studio-c-09.jpg" alt="Studio C — private entrance and patio" class="slide" loading="lazy">
+          <img src="photos/studio-c-10.jpg" alt="Studio C — covered outdoor lounge area" class="slide" loading="lazy">
+          <button class="car-btn prev" type="button" aria-label="Previous photo">&#10094;</button>
+          <button class="car-btn next" type="button" aria-label="Next photo">&#10095;</button>
+          <div class="car-count">1 / 10</div>
+        </div>
+        <div class="body">
+          <h3>Studio C</h3>
+          <div class="price">$3,000 <small>/ month &nbsp;&middot;&nbsp; $3,000 deposit</small></div>
+          <div class="specs">
+            <span>Studio</span><span>1 bath</span><span>Private entrance</span>
+          </div>
+          <p class="desc">Bright, newly finished unit with vaulted ceilings, skylight, and polished concrete floors. Full kitchen with gas range and butcher-block island, walk-in glass shower with pebble tile, mini-split heating &amp; cooling, and a private entrance opening to a covered outdoor lounge area.</p>
+          <a class="apply" href="#apply" data-unit="Studio C">Apply for This Unit</a>
+        </div>
+      </div>
+
+      <!-- ===== HOME A — placeholder ===== -->
+      <div class="card">
+        <div class="photo">
+          <span class="tag soon">Coming Soon</span>
+          Details coming soon
+        </div>
+        <div class="body">
+          <h3>Home A — Coming Soon</h3>
+          <div class="price">$3,500 <small>/ month &nbsp;&middot;&nbsp; $3,500 deposit</small></div>
+          <div class="specs">
+            <span>Details to follow</span>
+          </div>
+          <p class="desc">This home will be listed shortly. Submit an application now and select "Home A (Coming Soon)" to get on the waitlist — we'll contact you first when it's ready.</p>
+          <a class="apply" href="#apply" data-unit="Home A (Coming Soon)">Join the Waitlist</a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<section class="apply-section" id="apply">
+  <div class="wrap">
+    <div class="apply-card">
+      <h2>Rental Application</h2>
+      <p>Takes about two minutes. Your application goes directly to our leasing team and we'll follow up within one business day.</p>
+
+      <form id="rental-form">
+        <div class="field">
+          <label for="name">Full name <span class="req">*</span></label>
+          <input type="text" id="name" name="Full Name" required autocomplete="name">
+        </div>
+        <div class="field">
+          <label for="email">Email <span class="req">*</span></label>
+          <input type="email" id="email" name="Email" required autocomplete="email">
+        </div>
+        <div class="field">
+          <label for="phone">Phone <span class="req">*</span></label>
+          <input type="tel" id="phone" name="Phone" required autocomplete="tel">
+        </div>
+        <div class="field">
+          <label for="unit">Unit you're applying for <span class="req">*</span></label>
+          <select id="unit" name="Unit" required>
+            <option value="" disabled selected>Select a unit</option>
+            <option>Studio B</option>
+            <option>Studio C</option>
+            <option>Home A (Coming Soon)</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="movein">Desired move-in date</label>
+          <input type="date" id="movein" name="Desired Move-In Date">
+        </div>
+        <div class="field">
+          <label for="occupants">Number of occupants</label>
+          <input type="number" id="occupants" name="Occupants" min="1">
+        </div>
+        <div class="field">
+          <label for="income">Monthly household income</label>
+          <input type="text" id="income" name="Monthly Income" placeholder="$">
+        </div>
+        <div class="field">
+          <label for="pets">Pets</label>
+          <select id="pets" name="Pets">
+            <option>No pets</option>
+            <option>Dog(s)</option>
+            <option>Cat(s)</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div class="field full">
+          <label for="employer">Current employer &amp; position</label>
+          <input type="text" id="employer" name="Employer">
+        </div>
+        <div class="field full">
+          <label for="message">Anything else we should know?</label>
+          <textarea id="message" name="Message" placeholder="Questions, references, timeline…"></textarea>
+        </div>
+
+        <button type="submit" class="submit-btn" id="submit-btn">Submit Application</button>
+        <div class="form-status" id="form-status" role="status"></div>
+        <div class="form-note">Submitting does not commit you to a lease. We'll reach out with next steps and screening details.</div>
+      </form>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div>&copy; 2026 Belleferme</div>
+    <div>Questions? <a href="mailto:michael@teamallied.co">michael@teamallied.co</a></div>
+  </div>
+</footer>
+
+<script>
+  // Photo carousels
+  document.querySelectorAll('[data-carousel]').forEach(function(car){
+    var slides = car.querySelectorAll('.slide');
+    var count = car.querySelector('.car-count');
+    var idx = 0;
+    function show(n){
+      slides[idx].classList.remove('active');
+      idx = (n + slides.length) % slides.length;
+      slides[idx].classList.add('active');
+      if (count) count.textContent = (idx + 1) + ' / ' + slides.length;
+    }
+    car.querySelector('.prev').addEventListener('click', function(){ show(idx - 1); });
+    car.querySelector('.next').addEventListener('click', function(){ show(idx + 1); });
+  });
+
+  // Pre-select the unit when an "Apply" button is clicked
+  document.querySelectorAll('.apply[data-unit]').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var sel = document.getElementById('unit');
+      sel.value = btn.getAttribute('data-unit');
+    });
+  });
+
+  // Submit the form via FormSubmit (AJAX) so the visitor stays on the page
+  var form = document.getElementById('rental-form');
+  var status = document.getElementById('form-status');
+  var submitBtn = document.getElementById('submit-btn');
+
+  form.addEventListener('submit', function(e){
+    e.preventDefault();
+    status.className = 'form-status';
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Sending…';
+
+    var data = new FormData(form);
+    data.append('_subject', 'New Rental Application — ' + (data.get('Unit') || 'Unit not selected'));
+    data.append('_template', 'table');
+    data.append('_captcha', 'false');
+
+    fetch('https://formsubmit.co/ajax/michael@teamallied.co', {
+      method: 'POST',
+      headers: { 'Accept': 'application/json' },
+      body: data
+    })
+    .then(function(res){ return res.json(); })
+    .then(function(json){
+      if (json.success === 'true' || json.success === true) {
+        status.textContent = 'Application received — we\u2019ll be in touch within one business day.';
+        status.className = 'form-status ok';
+        form.reset();
+      } else {
+        throw new Error('Submit failed');
+      }
+    })
+    .catch(function(){
+      status.textContent = 'Something went wrong sending your application. Please email us directly at michael@teamallied.co.';
+      status.className = 'form-status err';
+    })
+    .finally(function(){
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Submit Application';
+    });
+  });
+</script>
+
+</body>
+</html>
