@@ -111,8 +111,8 @@
   .card .apply.disabled{background:var(--field);color:var(--muted);pointer-events:none}
 
   /* Photo carousel */
-  .carousel .slide{display:none;position:absolute;inset:0}
-  .carousel .slide.active{display:block}
+  .card .photo img.slide{display:none;position:absolute;inset:0}
+  .card .photo img.slide.active{display:block}
   .car-btn{
     position:absolute;top:50%;transform:translateY(-50%);
     background:rgba(23,32,27,.55);color:#fff;border:none;cursor:pointer;
@@ -129,7 +129,7 @@
     background:rgba(23,32,27,.55);color:#fff;font-size:.72rem;font-weight:600;
     padding:3px 9px;border-radius:99px;letter-spacing:.04em;
   }
-  .carousel .slide{cursor:zoom-in}
+  .card .photo img.slide{cursor:zoom-in}
 
   /* Fullscreen photo viewer */
   .lightbox{
