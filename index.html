@@ -47,7 +47,13 @@
   .nav a.cta:hover{background:var(--cypress-dark)}
 
   /* Hero */
-  .hero{background:var(--cypress-dark);color:#fff;padding:72px 0 64px}
+  .hero{
+    background:
+      linear-gradient(rgba(23,42,32,.78), rgba(23,42,32,.82)),
+      url('photos/belleferme-hero.jpg') center 62% / cover no-repeat,
+      var(--cypress-dark);
+    color:#fff;padding:88px 0 80px;
+  }
   .hero .eyebrow{
     text-transform:uppercase;letter-spacing:.14em;font-size:.75rem;font-weight:600;
     color:var(--hay);margin-bottom:16px;
@@ -260,11 +266,12 @@
           <img src="photos/studio-b-01.jpg" alt="Studio B — open living space with kitchenette and vaulted ceilings" class="slide active">
           <img src="photos/studio-b-02.jpg" alt="Studio B — open floor plan with polished concrete floors" class="slide" loading="lazy">
           <img src="photos/studio-b-03.jpg" alt="Studio B — living and sleeping area with dining nook" class="slide" loading="lazy">
+          <img src="photos/studio-b-06.jpg" alt="Studio B — sleeping area and en-suite bathroom" class="slide" loading="lazy">
           <img src="photos/studio-b-04.jpg" alt="Studio B — bathroom with pebble tile floor" class="slide" loading="lazy">
           <img src="photos/studio-b-05.jpg" alt="Studio B — walk-in glass shower with rain showerhead" class="slide" loading="lazy">
           <button class="car-btn prev" type="button" aria-label="Previous photo">&#10094;</button>
           <button class="car-btn next" type="button" aria-label="Next photo">&#10095;</button>
-          <div class="car-count">1 / 5</div>
+          <div class="car-count">1 / 6</div>
         </div>
         <div class="body">
           <h3>Studio B</h3>
@@ -360,12 +367,53 @@
           <input type="date" id="movein" name="Desired Move-In Date">
         </div>
         <div class="field">
-          <label for="occupants">Number of occupants</label>
-          <input type="number" id="occupants" name="Occupants" min="1">
+          <label for="lease-term">Desired lease term</label>
+          <select id="lease-term" name="Lease Term">
+            <option>12 months</option>
+            <option>6 months</option>
+            <option>Month-to-month</option>
+            <option>Other / flexible</option>
+          </select>
+        </div>
+        <div class="field full">
+          <label for="current-address">Current address <span class="req">*</span></label>
+          <input type="text" id="current-address" name="Current Address" required autocomplete="street-address">
+        </div>
+        <div class="field">
+          <label for="time-at-address">Time at current address</label>
+          <input type="text" id="time-at-address" name="Time at Current Address" placeholder="e.g. 3 years">
+        </div>
+        <div class="field">
+          <label for="reason-moving">Reason for moving</label>
+          <input type="text" id="reason-moving" name="Reason for Moving">
+        </div>
+        <div class="field">
+          <label for="current-landlord">Current landlord name &amp; phone</label>
+          <input type="text" id="current-landlord" name="Current Landlord">
+        </div>
+        <div class="field">
+          <label for="previous-landlord">Previous landlord name &amp; phone</label>
+          <input type="text" id="previous-landlord" name="Previous Landlord">
+        </div>
+        <div class="field full">
+          <label for="employer">Current employer &amp; position</label>
+          <input type="text" id="employer" name="Employer">
+        </div>
+        <div class="field">
+          <label for="employment-length">Length of employment</label>
+          <input type="text" id="employment-length" name="Length of Employment" placeholder="e.g. 2 years">
         </div>
         <div class="field">
           <label for="income">Monthly household income</label>
           <input type="text" id="income" name="Monthly Income" placeholder="$">
+        </div>
+        <div class="field">
+          <label for="occupants">Number of occupants</label>
+          <input type="number" id="occupants" name="Occupants" min="1">
+        </div>
+        <div class="field">
+          <label for="coapplicants">Co-applicant name(s)</label>
+          <input type="text" id="coapplicants" name="Co-Applicants" placeholder="If applying with others">
         </div>
         <div class="field">
           <label for="pets">Pets</label>
@@ -376,13 +424,38 @@
             <option>Other</option>
           </select>
         </div>
+        <div class="field">
+          <label for="pet-details">Pet details</label>
+          <input type="text" id="pet-details" name="Pet Details" placeholder="Type, breed, weight, how many">
+        </div>
+        <div class="field">
+          <label for="vehicles">Vehicle(s)</label>
+          <input type="text" id="vehicles" name="Vehicles" placeholder="Make / model">
+        </div>
+        <div class="field">
+          <label for="smoking">Do you smoke?</label>
+          <select id="smoking" name="Smoking">
+            <option>No</option>
+            <option>Yes</option>
+          </select>
+        </div>
         <div class="field full">
-          <label for="employer">Current employer &amp; position</label>
-          <input type="text" id="employer" name="Employer">
+          <label for="eviction">Have you ever been evicted or broken a lease? <span class="req">*</span></label>
+          <select id="eviction" name="Ever Evicted or Broken Lease" required>
+            <option value="" disabled selected>Select one</option>
+            <option>No</option>
+            <option>Yes</option>
+          </select>
         </div>
         <div class="field full">
           <label for="message">Anything else we should know?</label>
-          <textarea id="message" name="Message" placeholder="Questions, references, timeline…"></textarea>
+          <textarea id="message" name="Message" placeholder="If you answered yes above, please explain here. Questions, references, timeline…"></textarea>
+        </div>
+        <div class="field full consent">
+          <label style="display:flex;gap:10px;align-items:flex-start;font-weight:500;cursor:pointer">
+            <input type="checkbox" name="Screening Consent" value="Agreed" required style="width:auto;margin-top:3px">
+            <span>I understand that a credit and background check will be required as part of the application process. <span class="req">*</span></span>
+          </label>
         </div>
 
         <button type="submit" class="submit-btn" id="submit-btn">Submit Application</button>
@@ -476,7 +549,10 @@
     });
   });
 
-  // Submit the form via FormSubmit (AJAX) so the visitor stays on the page
+  // Submissions are emailed via FormSubmit and logged to Google Sheets via Apps Script.
+  // After deploying the Apps Script web app, paste its URL between the quotes below:
+  var SHEETS_URL = 'https://script.google.com/macros/s/AKfycbwh9NF1SBPx37vmgXFWMuVXGrb45rLh7k1o9hTPtMh4un-57V5qXK_lkMbr2OQ4mt_U5A/exec';
+
   var form = document.getElementById('rental-form');
   var status = document.getElementById('form-status');
   var submitBtn = document.getElementById('submit-btn');
@@ -488,7 +564,17 @@
     submitBtn.textContent = 'Sending…';
 
     var data = new FormData(form);
+
+    // Log to Google Sheets (fire-and-forget; doesn't block the email submission)
+    if (SHEETS_URL.indexOf('http') === 0) {
+      try {
+        var params = new URLSearchParams();
+        data.forEach(function(v, k){ params.append(k, v); });
+        fetch(SHEETS_URL, { method: 'POST', mode: 'no-cors', body: params });
+      } catch (err) { /* sheet logging is best-effort */ }
+    }
     data.append('_subject', 'New Rental Application — ' + (data.get('Unit') || 'Unit not selected'));
+    data.append('_cc', 'christytab@fixaflood.com');
     data.append('_template', 'table');
     data.append('_captcha', 'false');
 
