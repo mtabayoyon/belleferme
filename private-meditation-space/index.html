@@ -27,7 +27,13 @@
   }
   .wrap{max-width:720px;margin:0 auto;padding:0 20px}
 
-  .hero{background:var(--cypress-dark);color:#fff;padding:56px 0 48px;text-align:center}
+  .hero{
+    background:
+      linear-gradient(rgba(23,42,32,.72), rgba(23,42,32,.78)),
+      url('photos/spa-01.jpg') center 55% / cover no-repeat,
+      var(--cypress-dark);
+    color:#fff;padding:72px 0 62px;text-align:center;
+  }
   .hero .eyebrow{text-transform:uppercase;letter-spacing:.14em;font-size:.72rem;font-weight:600;color:var(--hay);margin-bottom:12px}
   .hero h1{font-family:'Fraunces',serif;font-weight:600;font-size:clamp(1.7rem,5vw,2.5rem);line-height:1.15}
   .hero p{margin:14px auto 0;max-width:46ch;color:#C9D4CC;font-size:1rem}
@@ -95,6 +101,42 @@
   }
   .form-status.err{display:block;background:#FBEEE8;color:#8A3B1E;border:1px solid #D97B54}
 
+  .gallery{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+  .gallery img{
+    width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:8px;
+    cursor:zoom-in;display:block;
+  }
+  @media (max-width:600px){.gallery{grid-template-columns:repeat(2,1fr)}}
+
+  .lightbox{
+    display:none;position:fixed;inset:0;z-index:200;
+    background:rgba(10,14,12,.94);
+    align-items:center;justify-content:center;
+  }
+  .lightbox.open{display:flex}
+  .lightbox img{max-width:92vw;max-height:86vh;object-fit:contain;border-radius:4px;user-select:none}
+  .lb-btn{
+    position:fixed;top:50%;transform:translateY(-50%);
+    background:rgba(255,255,255,.12);color:#fff;border:none;cursor:pointer;
+    width:46px;height:46px;border-radius:50%;font-size:1.2rem;
+    display:flex;align-items:center;justify-content:center;z-index:201;
+  }
+  .lb-btn:hover{background:rgba(255,255,255,.28)}
+  .lb-btn.prev{left:14px}
+  .lb-btn.next{right:14px}
+  .lb-close{
+    position:fixed;top:14px;right:14px;z-index:201;
+    background:rgba(255,255,255,.12);color:#fff;border:none;cursor:pointer;
+    width:42px;height:42px;border-radius:50%;font-size:1.15rem;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .lb-close:hover{background:rgba(255,255,255,.28)}
+  .lb-count{
+    position:fixed;bottom:18px;left:50%;transform:translateX(-50%);z-index:201;
+    color:#fff;font-size:.85rem;font-weight:600;
+    background:rgba(255,255,255,.12);padding:5px 14px;border-radius:99px;
+  }
+
   .rules{font-size:.88rem;color:var(--muted)}
   .rules li{margin:6px 0 6px 18px}
 
@@ -138,6 +180,24 @@
       <span>Spa / Hot Tub</span>
       <span>Cold Plunge</span>
       <span>Covered Lounge</span>
+      <span>Bocce Court</span>
+      <span>Cornhole &amp; Lawn</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>The Space</h2>
+    <div class="gallery" id="gallery">
+      <img src="photos/spa-01.jpg" alt="Backyard with covered pergola, spa, and cold plunge" loading="lazy">
+      <img src="photos/spa-02.jpg" alt="Covered lounge with spa and hammock" loading="lazy">
+      <img src="photos/spa-03.jpg" alt="Hammock under the pergola" loading="lazy">
+      <img src="photos/spa-04.jpg" alt="Lawn with cold plunge and cornhole" loading="lazy">
+      <img src="photos/spa-05.jpg" alt="Bocce court" loading="lazy">
+      <img src="photos/spa-06.jpg" alt="Private patio entrance" loading="lazy">
+      <img src="photos/spa-07.jpg" alt="Indoor lounge and dining area" loading="lazy">
+      <img src="photos/spa-08.jpg" alt="Kitchen and living area" loading="lazy">
+      <img src="photos/spa-09.jpg" alt="Kitchen with skylight" loading="lazy">
+      <img src="photos/spa-10.jpg" alt="Walk-in shower with pebble floor" loading="lazy">
     </div>
   </div>
 
@@ -226,11 +286,58 @@
   </footer>
 </div>
 
+<div class="lightbox" id="lightbox" role="dialog" aria-label="Photo viewer">
+  <button class="lb-close" type="button" aria-label="Close">&#10005;</button>
+  <button class="lb-btn prev" type="button" aria-label="Previous photo">&#10094;</button>
+  <img src="" alt="">
+  <button class="lb-btn next" type="button" aria-label="Next photo">&#10095;</button>
+  <div class="lb-count"></div>
+</div>
+
 <script>
+  // Gallery lightbox
+  var lb = document.getElementById('lightbox');
+  var lbImg = lb.querySelector('img');
+  var lbCount = lb.querySelector('.lb-count');
+  var lbSet = Array.prototype.slice.call(document.querySelectorAll('#gallery img'));
+  var lbIdx = 0;
+  function lbShow(n){
+    lbIdx = (n + lbSet.length) % lbSet.length;
+    lbImg.src = lbSet[lbIdx].src;
+    lbImg.alt = lbSet[lbIdx].alt;
+    lbCount.textContent = (lbIdx + 1) + ' / ' + lbSet.length;
+  }
+  function lbClose(){ lb.classList.remove('open'); document.body.style.overflow = ''; }
+  lbSet.forEach(function(img, i){
+    img.addEventListener('click', function(){
+      lb.classList.add('open');
+      document.body.style.overflow = 'hidden';
+      lbShow(i);
+    });
+  });
+  lb.querySelector('.lb-close').addEventListener('click', lbClose);
+  lb.querySelector('.lb-btn.prev').addEventListener('click', function(){ lbShow(lbIdx - 1); });
+  lb.querySelector('.lb-btn.next').addEventListener('click', function(){ lbShow(lbIdx + 1); });
+  lb.addEventListener('click', function(e){ if (e.target === lb) lbClose(); });
+  document.addEventListener('keydown', function(e){
+    if (!lb.classList.contains('open')) return;
+    if (e.key === 'Escape') lbClose();
+    if (e.key === 'ArrowLeft') lbShow(lbIdx - 1);
+    if (e.key === 'ArrowRight') lbShow(lbIdx + 1);
+  });
+  var touchX = null;
+  lb.addEventListener('touchstart', function(e){ touchX = e.touches[0].clientX; }, {passive:true});
+  lb.addEventListener('touchend', function(e){
+    if (touchX === null) return;
+    var dx = e.changedTouches[0].clientX - touchX;
+    if (Math.abs(dx) > 40) lbShow(dx < 0 ? lbIdx + 1 : lbIdx - 1);
+    touchX = null;
+  }, {passive:true});
+
   // ===== CONFIG — edit these values =====
   var HOURLY_RATE = 45;                 // $ per hour
   var DAILY_RATE = 250;                 // $ per full day
-  var VENMO_USERNAME = 'YOUR-VENMO-USERNAME';  // without the @
+  var VENMO_USERNAME = 'michael-taba';  // without the @
   var OPEN_HOUR = 8;                    // first bookable start time (24h)
   var CLOSE_HOUR = 20;                  // last bookable start time (24h)
   // ======================================
