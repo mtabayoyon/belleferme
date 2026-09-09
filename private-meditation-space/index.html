@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Private Meditation Space — Belleferme</title>
+<title>Private Meditation Space — Belle Ferme</title>
 <meta name="robots" content="noindex, nofollow">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -153,7 +153,7 @@
 
 <section class="hero">
   <div class="wrap">
-    <div class="eyebrow">Belleferme &middot; Private Booking</div>
+    <div class="eyebrow">Belle Ferme &middot; Private Booking</div>
     <h1>Private Meditation Space</h1>
     <p>Reserve private use of the sauna, spa, and cold plunge in a quiet farm setting. By appointment only.</p>
   </div>
@@ -261,7 +261,7 @@
       <h3>Request received!</h3>
       <p>To hold your reservation, send your payment via Venmo. Include your name and date in the note.</p>
       <div class="pay-amt" id="confirm-amt">$45</div>
-      <p>to <span class="handle" id="confirm-handle">@Belleferme</span></p>
+      <p>to <span class="handle" id="confirm-handle">@Belle Ferme</span></p>
       <a class="venmo-btn" id="venmo-link" href="#" target="_blank" rel="noopener">Pay with Venmo</a>
       <p style="margin-top:16px">We'll reply by email or text to confirm your time slot. If your requested time isn't available, we'll refund or reschedule.</p>
     </div>
@@ -401,11 +401,27 @@
     .then(function(json){
       if (json.success === 'true' || json.success === true) {
         var note = 'Meditation Space ' + form.elements['Date'].value + ' ' + form.elements['Start Time'].value + ' - ' + form.elements['Name'].value;
-        var link = 'https://account.venmo.com/pay?recipients=' + encodeURIComponent(VENMO_USERNAME) +
+        var webLink = 'https://account.venmo.com/pay?recipients=' + encodeURIComponent(VENMO_USERNAME) +
+                   '&amount=' + total + '&note=' + encodeURIComponent(note);
+        var appLink = 'venmo://paycharge?txn=pay&recipients=' + encodeURIComponent(VENMO_USERNAME) +
                    '&amount=' + total + '&note=' + encodeURIComponent(note);
         document.getElementById('confirm-amt').textContent = '$' + total;
         document.getElementById('confirm-handle').textContent = '@' + VENMO_USERNAME;
-        document.getElementById('venmo-link').href = link;
+        var venmoBtn = document.getElementById('venmo-link');
+        var isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+        venmoBtn.href = webLink;
+        if (isMobile) {
+          venmoBtn.addEventListener('click', function(ev){
+            ev.preventDefault();
+            // Try the Venmo app first; fall back to the website if it doesn't open
+            var fallback = setTimeout(function(){ window.location.href = webLink; }, 1600);
+            window.addEventListener('pagehide', function(){ clearTimeout(fallback); }, {once:true});
+            document.addEventListener('visibilitychange', function(){
+              if (document.hidden) clearTimeout(fallback);
+            }, {once:true});
+            window.location.href = appLink;
+          });
+        }
         form.style.display = 'none';
         confirmBox.classList.add('show');
         confirmBox.scrollIntoView({behavior:'smooth', block:'center'});
