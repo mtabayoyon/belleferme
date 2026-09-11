@@ -155,9 +155,9 @@
 
 <section class="hero">
   <div class="wrap">
-    <div class="eyebrow">Belle Ferme &middot; Private Booking</div>
+    <div class="eyebrow">Belle Ferme &middot; Private Membership Association</div>
     <h1>Private Meditation Space</h1>
-    <p>Reserve private use of the sauna, spa, and cold plunge in a quiet farm setting. By appointment only.</p>
+    <p>Sauna, spa, and cold plunge in a quiet farm setting — available exclusively to members. Membership is included with your first booking.</p>
   </div>
 </section>
 
@@ -205,6 +205,7 @@
 
   <div class="card">
     <h2>Request a Booking</h2>
+    <p style="color:var(--muted);font-size:.9rem;margin-bottom:16px">This is a private member offering. Submitting a booking includes your request to join the Belle Ferme Private Membership Association — there's no separate fee, just the agreement below.</p>
 
     <form id="booking-form">
       <div class="fieldbox">
@@ -255,6 +256,13 @@
         <span class="amt" id="total-amt">$45</span>
       </div>
 
+      <div class="fieldbox full">
+        <label style="display:flex;gap:10px;align-items:flex-start;font-weight:500;cursor:pointer;font-size:.88rem">
+          <input type="checkbox" name="PMA Membership Agreement" value="Agreed" required style="width:auto;margin-top:3px">
+          <span>I have read and agree to the <a href="/pma/" target="_blank" rel="noopener" style="color:var(--cypress);font-weight:600">Membership Agreement</a>, and I request membership in the Belle Ferme Private Membership Association. <span class="req">*</span></span>
+        </label>
+      </div>
+
       <button type="submit" class="submit-btn" id="b-submit">Request Booking</button>
       <div class="form-note">Your time slot is confirmed once payment is received and we reply to confirm availability.</div>
     </form>
@@ -274,7 +282,7 @@
   <div class="card">
     <h2>Good to Know</h2>
     <ul class="rules">
-      <li>By appointment only — this is a private space on a working property.</li>
+      <li>Members only, by appointment — this is a private space on a working property.</li>
       <li>Please arrive no more than 10 minutes before your booking.</li>
       <li>Towels not provided — bring your own.</li>
       <li>No glass in the sauna, spa, or plunge areas.</li>
