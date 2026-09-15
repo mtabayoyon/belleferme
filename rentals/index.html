@@ -264,8 +264,8 @@
 
       <!-- ===== STUDIO B ===== -->
       <div class="card">
-        <div class="photo carousel" data-carousel>
-          <span class="tag">Available Now</span>
+        <div class="photo carousel" data-carousel data-unit-card="Studio B">
+          <span class="tag soon" data-status-tag>Leased</span>
           <img src="../photos/studio-b-01.jpg" alt="Studio B — open living space with kitchenette and vaulted ceilings" class="slide active">
           <img src="../photos/studio-b-02.jpg" alt="Studio B — open floor plan with polished concrete floors" class="slide" loading="lazy">
           <img src="../photos/studio-b-03.jpg" alt="Studio B — living and sleeping area with dining nook" class="slide" loading="lazy">
@@ -283,14 +283,14 @@
             <span>Studio</span><span>1 bath</span><span>Open floor plan</span>
           </div>
           <p class="desc">Spacious open-plan studio with vaulted ceilings, recessed lighting, and polished concrete floors. Kitchenette with gas cooktop and range hood, dining nook, and a modern bathroom featuring a walk-in glass shower with rain showerhead and pebble tile.</p>
-          <a class="apply" href="#apply" data-unit="Studio B">Apply for This Unit</a>
+          <a class="apply" href="#apply" data-unit="Studio B" data-apply-btn>Join Waitlist</a>
         </div>
       </div>
 
       <!-- ===== UNIT C ===== -->
       <div class="card">
-        <div class="photo carousel" data-carousel>
-          <span class="tag">Available Now</span>
+        <div class="photo carousel" data-carousel data-unit-card="Unit C">
+          <span class="tag" data-status-tag>Available Now</span>
           <img src="../photos/studio-c-01.jpg" alt="Unit C — open living area and kitchen" class="slide active">
           <img src="../photos/studio-c-02.jpg" alt="Unit C — kitchen with skylight and gas range" class="slide" loading="lazy">
           <img src="../photos/studio-c-03.jpg" alt="Unit C — butcher-block kitchen island" class="slide" loading="lazy">
@@ -312,14 +312,14 @@
             <span>2 bed</span><span>1 bath</span><span>Private entrance</span>
           </div>
           <p class="desc">Bright, newly finished two-bedroom with vaulted ceilings, skylight, and polished concrete floors. Full kitchen with gas range and butcher-block island, walk-in glass shower with pebble tile, mini-split heating &amp; cooling, and a private entrance opening to a covered outdoor lounge area.</p>
-          <a class="apply" href="#apply" data-unit="Unit C">Apply for This Unit</a>
+          <a class="apply" href="#apply" data-unit="Unit C" data-apply-btn>Apply for This Unit</a>
         </div>
       </div>
 
       <!-- ===== HOME A — main house ===== -->
       <div class="card">
-        <div class="photo carousel" data-carousel>
-          <span class="tag soon">Coming Soon</span>
+        <div class="photo carousel" data-carousel data-unit-card="Home A">
+          <span class="tag soon" data-status-tag>Leased</span>
           <img src="../photos/home-a-01.jpg" alt="Home A — bright living room with hardwood floors" class="slide active">
           <img src="../photos/home-a-02.jpg" alt="Home A — open living area with wood-burning stove" class="slide" loading="lazy">
           <img src="../photos/home-a-03.jpg" alt="Home A — chef's kitchen with island and skylights" class="slide" loading="lazy">
@@ -341,7 +341,7 @@
             <span>House</span><span>1 bath</span><span>Fully renovated</span>
           </div>
           <p class="desc">Fully renovated main house with hardwood floors, vaulted ceilings with exposed beams, and skylights throughout. Chef's kitchen with oversized butcher-block island, marble counters, gas range, and reclaimed-wood range hood. Wood-burning stove in the living room, mini-split heating &amp; cooling, and a marble-tiled bath with soaking tub.</p>
-          <a class="apply" href="#apply" data-unit="Home A (Coming Soon)">Join the Waitlist</a>
+          <a class="apply" href="#apply" data-unit="Home A" data-apply-btn>Join Waitlist</a>
         </div>
       </div>
 
@@ -372,9 +372,9 @@
           <label for="unit">Unit you're applying for <span class="req">*</span></label>
           <select id="unit" name="Unit" required>
             <option value="" disabled selected>Select a unit</option>
-            <option>Studio B</option>
+            <option>Studio B (waitlist)</option>
             <option>Unit C</option>
-            <option>Home A (Coming Soon)</option>
+            <option>Home A (waitlist)</option>
           </select>
         </div>
         <div class="field">
@@ -560,9 +560,44 @@
   document.querySelectorAll('.apply[data-unit]').forEach(function(btn){
     btn.addEventListener('click', function(){
       var sel = document.getElementById('unit');
-      sel.value = btn.getAttribute('data-unit');
+      var want = btn.getAttribute('data-unit');
+      for (var i = 0; i < sel.options.length; i++) {
+        if (sel.options[i].text.indexOf(want) === 0) { sel.selectedIndex = i; break; }
+      }
     });
   });
+
+  // ---- Live unit status from Google Sheets config (optional) ----
+  // Deploy the config Apps Script and paste its web app URL below.
+  var CONFIG_URL = 'PASTE_CONFIG_SCRIPT_URL_HERE';
+  if (CONFIG_URL.indexOf('http') === 0) {
+    fetch(CONFIG_URL).then(function(r){ return r.json(); }).then(function(cfg){
+      (cfg.units || []).forEach(function(u){
+        var card = document.querySelector('[data-unit-card="' + u.Unit + '"]');
+        if (!card) return;
+        var wrap = card.closest('.card');
+        var tag = card.querySelector('[data-status-tag]');
+        var btn = wrap.querySelector('[data-apply-btn]');
+        var price = wrap.querySelector('.price');
+        var available = /^available/i.test(u.Status || '');
+        if (tag) {
+          tag.textContent = available ? 'Available Now' : (u.Status || 'Not Available');
+          tag.className = available ? 'tag' : 'tag soon';
+        }
+        if (btn) btn.textContent = available ? 'Apply for This Unit' : 'Join Waitlist';
+        if (price && u.Price) {
+          price.innerHTML = u.Price + ' <small>/ month &nbsp;&middot;&nbsp; ' + (u.Deposit || u.Price) + ' deposit</small>';
+        }
+        // Update the form dropdown label for this unit
+        var sel = document.getElementById('unit');
+        for (var i = 0; i < sel.options.length; i++) {
+          if (sel.options[i].text.indexOf(u.Unit) === 0) {
+            sel.options[i].text = u.Unit + (available ? '' : ' (waitlist)');
+          }
+        }
+      });
+    }).catch(function(){ /* static fallback stays */ });
+  }
 
   // Submissions are emailed via FormSubmit and logged to Google Sheets via Apps Script.
   var SHEETS_URL = 'https://script.google.com/macros/s/AKfycbwh9NF1SBPx37vmgXFWMuVXGrb45rLh7k1o9hTPtMh4un-57V5qXK_lkMbr2OQ4mt_U5A/exec';
